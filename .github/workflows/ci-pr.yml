@@ -1,0 +1,11 @@
+name: CI / pr-min
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  hello:
+    name: hello
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "PR detected on ${{ github.head_ref }} → OK"
