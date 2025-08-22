@@ -2,8 +2,7 @@ name: CI / build
 
 on:
   pull_request:
-  push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -13,23 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+        with: { python-version: "3.12" }
       - uses: abatilo/actions-poetry@v3
-        with:
-          poetry-version: "1.8.3"
+        with: { poetry-version: "1.8.3" }
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry
           key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-      # Importante: instalar el PROYECTO (sin --no-root) para que los imports funcionen igual que en local
       - name: Install deps
         run: poetry install --no-interaction
       - name: Lint (ruff)
         run: poetry run ruff check .
-      - name: Format check (ruff-format)
+      - name: Format (ruff)
         run: poetry run ruff format --check .
-      - name: Black check
+      - name: Black
         run: poetry run black --check .
 
   pytest:
@@ -39,11 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+        with: { python-version: "3.12" }
       - uses: abatilo/actions-poetry@v3
-        with:
-          poetry-version: "1.8.3"
+        with: { poetry-version: "1.8.3" }
       - uses: actions/cache@v4
         with:
           path: ~/.cache/pypoetry
