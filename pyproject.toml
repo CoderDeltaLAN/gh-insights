@@ -1,24 +1,24 @@
 [tool.poetry]
-name = "plantilla"
+name = "gh-insights"
 version = "0.1.0"
-description = "Plantilla base de proyecto Python (Poetry + tests)."
-authors = ["Yosvel <coderdeltalan.cargo784@8alias.com>"]
+description = "CLI para insights rápidos de la API de GitHub (Poetry + pre-commit + CI/CD)"
+authors = ["CoderDeltaLAN <coderdeltalan@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "paquete_ejemplo", from = "src" }]
+# MUY IMPORTANTE: apuntar al paquete correcto en src/
+packages = [{ include = "gh_insights", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
+httpx = "^0.28.1"
+rich = "^14.1.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.2.0"
+pytest = "^8.4.1"
+respx = "^0.22.0"
+black = "^24.10.0"
 ruff = "^0.5.7"
-black = "^24.8.0"
-mypy = "^1.11.1"
+mypy = "^1.17.1"
 pre-commit = "^3.8.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 100
@@ -29,4 +29,11 @@ line-length = 100
 [tool.mypy]
 python_version = "3.12"
 strict = true
+
+[tool.pytest.ini_options]
+addopts = "-q"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
