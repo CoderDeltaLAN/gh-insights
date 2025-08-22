@@ -1,9 +1,9 @@
-from typing import Dict, List
+from typing import Any, Dict, List
+
 import httpx
 import respx
-import pytest
 
-from gh_insights.api import get_top_repos, get_repo_languages, GITHUB_API
+from gh_insights.api import GITHUB_API, get_repo_languages, get_top_repos
 
 
 @respx.mock
@@ -23,8 +23,7 @@ def test_get_top_repos_ordenado_por_stars() -> None:
         )
     )
 
-    data: List[Dict] = get_top_repos(user, limit=2)
-    # Ahora validamos que vengan ordenados correctamente
+    data: List[Dict[str, Any]] = get_top_repos(user, limit=2)
     assert [d["name"] for d in data] == ["repo-b", "repo-c"]
 
 
@@ -34,8 +33,7 @@ def test_get_repo_languages_ok() -> None:
     respx.get(f"{GITHUB_API}/repos/{owner}/{repo}/languages").mock(
         return_value=httpx.Response(200, json={"Python": 1200, "Shell": 300})
     )
-
     langs = get_repo_languages(owner, repo)
-    # Total = 1500, Python = 1200 → 80%, Shell = 300 → 20%
-    assert round(langs["Python"], 1) == 80.0
-    assert round(langs["Shell"], 1) == 20.0
+    # 1200 de 1500 = 80%, 300 de 1500 = 20%
+    assert "Python" in langs and round(langs["Python"], 1) == 80.0
+    assert "Shell" in langs and round(langs["Shell"], 1) == 20.0
