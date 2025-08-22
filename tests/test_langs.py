@@ -1,13 +1,13 @@
 import pytest
-import respx
 from httpx import Response
+import respx
+
 from gh_insights.api import get_repo_languages
 
 
 @pytest.mark.asyncio
 @respx.mock
-async def test_get_repo_languages():
-    # Simular respuesta de la API de GitHub
+async def test_get_repo_languages() -> None:
     url = "https://api.github.com/repos/torvalds/linux/languages"
     respx.get(url).mock(
         return_value=Response(
@@ -19,12 +19,8 @@ async def test_get_repo_languages():
             },
         )
     )
-
-    # Ejecutar la función
     langs = get_repo_languages("torvalds", "linux")
-
-    # Validar contenido en porcentajes
-    assert "C" in langs
-    assert round(langs["C"], 1) == 57.1
-    assert round(langs["Python"], 1) == 28.6
-    assert round(langs["Rust"], 1) == 14.3
+    total = 1000 + 500 + 250  # 1750
+    assert round(langs["C"], 1) == round(1000 / total * 100, 1)
+    assert round(langs["Python"], 1) == round(500 / total * 100, 1)
+    assert round(langs["Rust"], 1) == round(250 / total * 100, 1)
