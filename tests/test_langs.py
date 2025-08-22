@@ -3,6 +3,7 @@ import respx
 from httpx import Response
 from gh_insights.api import get_repo_languages
 
+
 @pytest.mark.asyncio
 @respx.mock
 async def test_get_repo_languages():
@@ -27,4 +28,3 @@ async def test_get_repo_languages():
     assert round(langs["C"], 1) == 57.1
     assert round(langs["Python"], 1) == 28.6
     assert round(langs["Rust"], 1) == 14.3
-

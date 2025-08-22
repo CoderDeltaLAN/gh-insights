@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "gh-insights"
 version = "0.1.0"
-description = "CLI para insights rápidos de la API de GitHub (Poetry + pre-commit + CI/CD)"
-authors = ["CoderDeltaLAN <coderdeltalan@gmail.com>"]
+description = "CLI para explorar repositorios y lenguajes de GitHub desde la terminal."
+authors = ["CoderDeltaLAN <tu-email@ejemplo.com>"]
+license = "MIT"
 readme = "README.md"
-# MUY IMPORTANTE: apuntar al paquete correcto en src/
 packages = [{ include = "gh_insights", from = "src" }]
 
 [tool.poetry.dependencies]
@@ -20,20 +20,18 @@ ruff = "^0.5.7"
 mypy = "^1.17.1"
 pre-commit = "^3.8.0"
 
-[tool.ruff]
-line-length = 100
-
-[tool.black]
-line-length = 100
-
-[tool.mypy]
-python_version = "3.12"
-strict = true
-
-[tool.pytest.ini_options]
-addopts = "-q"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
