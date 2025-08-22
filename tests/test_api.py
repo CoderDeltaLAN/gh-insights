@@ -1,7 +1,6 @@
 from typing import Dict, List
 import httpx
 import respx
-import pytest
 
 from gh_insights.api import get_top_repos, get_repo_languages, GITHUB_API
 
