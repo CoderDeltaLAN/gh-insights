@@ -33,9 +33,7 @@ def main() -> None:
         "top-repos", help="Muestra los repos más populares de un usuario"
     )
     top_repos_parser.add_argument("user", help="Nombre de usuario de GitHub")
-    top_repos_parser.add_argument(
-        "--limit", type=int, default=5, help="Número de repos a mostrar"
-    )
+    top_repos_parser.add_argument("--limit", type=int, default=5, help="Número de repos a mostrar")
 
     args = parser.parse_args()
 

@@ -1,64 +1,45 @@
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 import os
 
 import httpx
 
-# Constante base de la API
 GITHUB_API = "https://api.github.com"
 
 
 def _headers() -> Dict[str, str]:
-    """Headers opcionales con token si está definido GITHUB_TOKEN."""
-    token: Optional[str] = os.getenv("GITHUB_TOKEN")
-    h: Dict[str, str] = {"Accept": "application/vnd.github+json"}
-    if token:
-        h["Authorization"] = f"Bearer {token}"
-    return h
+    token = os.getenv("GITHUB_TOKEN")
+    return {"Authorization": f"Bearer {token}"} if token else {}
 
 
-from typing import List, Dict
-import httpx
-
-GITHUB_API = "https://api.github.com"
-
-
-from typing import List, Dict
-import httpx
-
-GITHUB_API = "https://api.github.com"
-
-
-from typing import List, Dict
-import httpx
-
-GITHUB_API = "https://api.github.com"
-
-
-def get_top_repos(user: str, limit: int = 5) -> List[Dict]:
-    """Obtiene los repos de un usuario ordenados por estrellas (desc)."""
-    resp = httpx.get(
-        f"{GITHUB_API}/users/{user}/repos",
-        params={"per_page": "100", "sort": "stars", "direction": "desc"},
-    )
-    resp.raise_for_status()
-    repos = resp.json()
-
-    # Ordenar por estrellas descendente (doble seguridad)
-    repos_sorted = sorted(repos, key=lambda r: r["stargazers_count"], reverse=True)
-
-    return repos_sorted[:limit]
+def get_top_repos(user: str, limit: int = 5) -> List[Dict[str, object]]:
+    """Devuelve los *limit* repos del usuario ordenados por estrellas (desc)."""
+    url = f"{GITHUB_API}/users/{user}/repos"
+    params = {"per_page": 100, "sort": "stars", "direction": "desc"}
+    with httpx.Client(headers=_headers(), timeout=30.0) as client:
+        resp = client.get(url, params=params)
+        resp.raise_for_status()
+        repos = resp.json()  # list[dict]
+    repos.sort(key=lambda r: r.get("stargazers_count", 0) or 0, reverse=True)
+    selected = repos[: int(limit)]
+    return [
+        {
+            "name": r.get("name", ""),
+            "full_name": r.get("full_name", ""),
+            "stars": int(r.get("stargazers_count", 0) or 0),
+            "forks": int(r.get("forks_count", 0) or 0),
+            "html_url": r.get("html_url", ""),
+        }
+        for r in selected
+    ]
 
 
 def get_repo_languages(owner: str, repo: str) -> Dict[str, float]:
-    """
-    Devuelve un diccionario {lenguaje: porcentaje} en lugar de bytes.
-    El porcentaje es (bytes_lenguaje / suma_total) * 100.
-    """
+    """Devuelve porcentajes de lenguajes (0–100) para un repo."""
     url = f"{GITHUB_API}/repos/{owner}/{repo}/languages"
-    resp = httpx.get(url, headers=_headers(), timeout=10)
-    resp.raise_for_status()
-    data: Dict[str, int] = resp.json()
-    total = sum(data.values())
-    if total == 0:
-        return {}
-    return {lang: (count / total) * 100 for lang, count in data.items()}
+    with httpx.Client(headers=_headers(), timeout=30.0) as client:
+        resp = client.get(url)
+        resp.raise_for_status()
+        data: Dict[str, int] = resp.json()
+
+    total = sum(data.values()) or 1
+    return {lang: (value / total) * 100.0 for lang, value in data.items()}
